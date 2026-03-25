@@ -1,4 +1,13 @@
 # https://docs.npmjs.com/trusted-publishers
+#
+# SETUP (one-time)
+# ─────────────────────────────────────────────────────────────────────────────
+# On npmjs.com, open the @ogis/icons package → Settings → Publishing →
+# Trusted Publishers → Add a publisher:
+#   Provider:      GitHub Actions
+#   Repository:    OpenGIS/icons
+#   Workflow file: publish.yml
+# ─────────────────────────────────────────────────────────────────────────────
 
 name: Publish to npm
 
@@ -30,11 +39,12 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           registry-url: 'https://registry.npmjs.org'
 
       - run: npm ci
       - run: npm run build
 
-      - run: npm publish --provenance --access public
+      - run: npm publish --provenance
         if: steps.version.outputs.changed == 'true'
+

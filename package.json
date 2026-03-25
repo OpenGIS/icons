@@ -1,6 +1,6 @@
 {
   "name": "@ogis/icons",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "type": "module",
   "description": "Open GIS icon set — SVG sprite, icon font and CSS classes",
   "homepage": "https://ogis.org/icons/icons/",
