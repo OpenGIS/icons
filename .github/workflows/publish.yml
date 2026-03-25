@@ -1,0 +1,55 @@
+name: Publish to npm
+
+on:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: read
+  id-token: write  # required for npm Trusted Publisher (OIDC)
+
+jobs:
+  check-version:
+    runs-on: ubuntu-latest
+    outputs:
+      is_new: ${{ steps.check.outputs.is_new }}
+      version: ${{ steps.check.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check if version is already published
+        id: check
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          PACKAGE=$(node -p "require('./package.json').name")
+          PUBLISHED=$(npm view "$PACKAGE@$VERSION" version 2>/dev/null || echo "")
+          if [ "$PUBLISHED" = "$VERSION" ]; then
+            echo "is_new=false" >> $GITHUB_OUTPUT
+            echo "Version $VERSION is already on npm — skipping."
+          else
+            echo "is_new=true" >> $GITHUB_OUTPUT
+            echo "New version $VERSION — will publish."
+          fi
+
+  publish:
+    needs: check-version
+    if: needs.check-version.outputs.is_new == 'true'
+    runs-on: ubuntu-latest
+    environment: npm
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - run: npm ci
+      - run: npm run build
+
+      - name: Publish
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
