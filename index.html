@@ -337,15 +337,20 @@
       }] : []),
     ];
 
-    document.getElementById('panel-snippets').innerHTML = snippets.map(s => `
+    const container = document.getElementById('panel-snippets');
+    container.innerHTML = snippets.map(s => `
       <div class="snippet">
         <label>${s.label}</label>
         <div class="snippet-body">
           <pre>${escHtml(s.code)}</pre>
-          <button onclick="copyText(${JSON.stringify(s.code)}, this)">Copy</button>
+          <button class="copy-btn">Copy</button>
         </div>
       </div>
     `).join('');
+
+    container.querySelectorAll('.copy-btn').forEach((btn, i) => {
+      btn.addEventListener('click', () => copyText(snippets[i].code, btn));
+    });
 
     document.getElementById('overlay').classList.add('open');
   }
