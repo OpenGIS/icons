@@ -1,0 +1,75 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  check-version:
+    runs-on: ubuntu-latest
+    outputs:
+      is_new: ${{ steps.check.outputs.is_new }}
+      version: ${{ steps.check.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check if version is new
+        id: check
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          if git rev-parse "v$VERSION" >/dev/null 2>&1; then
+            echo "is_new=false" >> $GITHUB_OUTPUT
+            echo "Version v$VERSION already deployed — skipping."
+          else
+            echo "is_new=true" >> $GITHUB_OUTPUT
+            echo "New version v$VERSION detected."
+          fi
+
+  deploy:
+    needs: check-version
+    if: needs.check-version.outputs.is_new == 'true'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - run: npm ci
+      - run: npm run build
+
+      - name: Prepare pages artifact
+        run: |
+          mkdir -p _site
+          cp index.html _site/
+          cp -r dist _site/
+
+      - uses: actions/configure-pages@v4
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Tag release
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag v${{ needs.check-version.outputs.version }}
+          git push origin v${{ needs.check-version.outputs.version }}

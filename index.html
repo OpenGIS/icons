@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>@ogis/icons</title>
+  <link rel="stylesheet" href="dist/ogis-icons.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f8f9fa;
+      --surface: #ffffff;
+      --border: #dee2e6;
+      --text: #212529;
+      --muted: #6c757d;
+      --accent: #0d6efd;
+      --accent-bg: #e7f1ff;
+      --code-bg: #f1f3f5;
+      --radius: 8px;
+      --shadow: 0 1px 3px rgba(0,0,0,.08);
+    }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 1.5rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    header h1 { font-size: 1.25rem; font-weight: 700; }
+    header p { color: var(--muted); font-size: .9rem; flex: 1; }
+    header nav { display: flex; gap: .5rem; }
+    header nav a {
+      font-size: .8rem;
+      padding: .25rem .6rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      text-decoration: none;
+      color: var(--muted);
+    }
+    header nav a:hover { border-color: var(--accent); color: var(--accent); }
+
+    .install {
+      background: #1e1e2e;
+      color: #cdd6f4;
+      padding: .75rem 2rem;
+      font-size: .85rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .install span { color: #6c7086; }
+    .install code { font-family: monospace; }
+    .install button {
+      margin-left: auto;
+      background: transparent;
+      border: 1px solid #45475a;
+      color: #cdd6f4;
+      padding: .2rem .6rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: .75rem;
+    }
+    .install button:hover { border-color: #cdd6f4; }
+
+    .toolbar {
+      padding: 1.25rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .toolbar input {
+      flex: 1;
+      max-width: 360px;
+      padding: .5rem .75rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: .9rem;
+      background: var(--surface);
+      outline: none;
+    }
+    .toolbar input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-bg); }
+    .toolbar .count { color: var(--muted); font-size: .85rem; }
+
+    #grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: .75rem;
+      padding: 0 2rem 2rem;
+    }
+
+    .icon-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem .5rem .75rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .5rem;
+      cursor: pointer;
+      transition: border-color .15s, box-shadow .15s;
+      text-align: center;
+    }
+    .icon-card:hover { border-color: var(--accent); box-shadow: var(--shadow); }
+    .icon-card i { font-size: 1.5rem; color: var(--text); }
+    .icon-card span { font-size: .7rem; color: var(--muted); word-break: break-all; line-height: 1.3; }
+
+    /* Detail panel */
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.4);
+      z-index: 100;
+    }
+    .overlay.open { display: flex; align-items: center; justify-content: center; }
+
+    .panel {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 1.5rem;
+      width: min(540px, 95vw);
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+    }
+    .panel-header {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      margin-bottom: 1.25rem;
+    }
+    .panel-header .preview { font-size: 2rem; }
+    .panel-header h2 { font-size: 1.1rem; font-weight: 600; }
+    .panel-header button {
+      margin-left: auto;
+      background: none;
+      border: none;
+      font-size: 1.25rem;
+      cursor: pointer;
+      color: var(--muted);
+      line-height: 1;
+    }
+
+    .snippet {
+      margin-bottom: 1rem;
+    }
+    .snippet label {
+      display: block;
+      font-size: .75rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      margin-bottom: .35rem;
+    }
+    .snippet-body {
+      display: flex;
+      align-items: flex-start;
+      background: var(--code-bg);
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .snippet-body pre {
+      flex: 1;
+      padding: .6rem .75rem;
+      font-size: .8rem;
+      font-family: ui-monospace, monospace;
+      white-space: pre-wrap;
+      word-break: break-all;
+      overflow: hidden;
+    }
+    .snippet-body button {
+      flex-shrink: 0;
+      border: none;
+      border-left: 1px solid var(--border);
+      background: transparent;
+      padding: 0 .6rem;
+      cursor: pointer;
+      font-size: .7rem;
+      color: var(--muted);
+      align-self: stretch;
+    }
+    .snippet-body button:hover { background: var(--accent-bg); color: var(--accent); }
+    .snippet-body button.copied { color: #198754; }
+
+    .panel-preview {
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+      margin-bottom: 1.25rem;
+      padding: 1rem;
+      background: var(--bg);
+      border-radius: 8px;
+    }
+    .panel-preview-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .3rem;
+      font-size: .7rem;
+      color: var(--muted);
+    }
+    .panel-preview-item i, .panel-preview-item svg { font-size: 1.5rem; width: 1.5rem; height: 1.5rem; fill: currentColor; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>@ogis/icons</h1>
+  <p>Open GIS icon set — SVG sprite, icon font &amp; CSS classes</p>
+  <nav>
+    <a href="https://www.npmjs.com/package/@ogis/icons" target="_blank" rel="noopener">NPM</a>
+    <a href="https://github.com/OpenGIS/icons" target="_blank" rel="noopener">GitHub</a>
+  </nav>
+</header>
+
+<div class="install">
+  <span>Install</span>
+  <code>npm install @ogis/icons</code>
+  <button onclick="copyText('npm install @ogis/icons', this)">Copy</button>
+</div>
+
+<div class="toolbar">
+  <input type="search" id="search" placeholder="Search icons…" autocomplete="off" />
+  <span class="count" id="count"></span>
+</div>
+
+<div id="grid"></div>
+
+<div class="overlay" id="overlay" onclick="closePanel(event)">
+  <div class="panel" id="panel">
+    <div class="panel-header">
+      <i class="panel-preview" id="panel-icon"></i>
+      <h2 id="panel-name"></h2>
+      <button onclick="closePanel()" aria-label="Close">✕</button>
+    </div>
+    <div class="panel-preview" id="panel-previews"></div>
+    <div id="panel-snippets"></div>
+  </div>
+</div>
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" id="sprite-container"></svg>
+
+<script>
+  let allIcons = [];
+  let codepoints = {};
+
+  async function init() {
+    // Load codepoints
+    try {
+      const res = await fetch('dist/ogis-icons.json');
+      codepoints = await res.json();
+    } catch (_) {}
+
+    // Load sprite to extract symbol IDs
+    try {
+      const res = await fetch('dist/ogis-icons.svg');
+      const text = await res.text();
+      const container = document.getElementById('sprite-container');
+      container.innerHTML = text;
+      allIcons = [...container.querySelectorAll('symbol')].map(s => s.id);
+    } catch (e) {
+      console.error('Could not load sprite', e);
+      return;
+    }
+
+    renderGrid(allIcons);
+    document.getElementById('search').addEventListener('input', e => {
+      const q = e.target.value.trim().toLowerCase();
+      const filtered = q ? allIcons.filter(n => n.includes(q)) : allIcons;
+      renderGrid(filtered);
+    });
+  }
+
+  function renderGrid(icons) {
+    const grid = document.getElementById('grid');
+    grid.innerHTML = icons.map(name => `
+      <button class="icon-card" onclick="showDetail('${name}')">
+        <i class="oi-${name}"></i>
+        <span>${name}</span>
+      </button>
+    `).join('');
+    document.getElementById('count').textContent = `${icons.length} icon${icons.length !== 1 ? 's' : ''}`;
+  }
+
+  function showDetail(name) {
+    const cp = codepoints[name];
+    const hex = cp ? `\\${cp.toString(16)}` : '';
+
+    document.getElementById('panel-name').textContent = name;
+    document.getElementById('panel-icon').className = `oi-${name} panel-preview`;
+
+    document.getElementById('panel-previews').innerHTML = `
+      <div class="panel-preview-item">
+        <i class="oi-${name}"></i>
+        <span>Font</span>
+      </div>
+      <div class="panel-preview-item">
+        <svg aria-hidden="true"><use href="dist/ogis-icons.svg#${name}"></use></svg>
+        <span>SVG Sprite</span>
+      </div>
+    `;
+
+    const snippets = [
+      {
+        label: 'Icon Font (HTML)',
+        code: `<i class="oi-${name}"></i>`,
+      },
+      {
+        label: 'SVG Sprite (HTML)',
+        code: `<svg aria-hidden="true">\n  <use href="@ogis/icons/dist/ogis-icons.svg#${name}"></use>\n</svg>`,
+      },
+      {
+        label: 'CSS import',
+        code: `@import '@ogis/icons/css';`,
+      },
+      {
+        label: 'SCSS import',
+        code: `@use '@ogis/icons/scss';`,
+      },
+      ...(hex ? [{
+        label: 'CSS content value',
+        code: `content: "${hex}"; /* ${name} */\nfont-family: 'ogis-icons';`,
+      }] : []),
+    ];
+
+    document.getElementById('panel-snippets').innerHTML = snippets.map(s => `
+      <div class="snippet">
+        <label>${s.label}</label>
+        <div class="snippet-body">
+          <pre>${escHtml(s.code)}</pre>
+          <button onclick="copyText(${JSON.stringify(s.code)}, this)">Copy</button>
+        </div>
+      </div>
+    `).join('');
+
+    document.getElementById('overlay').classList.add('open');
+  }
+
+  function closePanel(e) {
+    if (!e || e.target === document.getElementById('overlay')) {
+      document.getElementById('overlay').classList.remove('open');
+    }
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closePanel();
+  });
+
+  function copyText(text, btn) {
+    navigator.clipboard.writeText(text).then(() => {
+      if (btn) {
+        btn.textContent = '✓';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1500);
+      }
+    });
+  }
+
+  function escHtml(str) {
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  init();
+</script>
+</body>
+</html>

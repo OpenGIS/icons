@@ -1,0 +1,38 @@
+{
+  "name": "@ogis/icons",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Open GIS icon set — SVG sprite, icon font and CSS classes",
+  "homepage": "https://opengis.github.io/icons/",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OpenGIS/icons.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    "./dist/*": "./dist/*",
+    "./css": "./dist/ogis-icons.css",
+    "./scss": "./dist/ogis-icons.scss"
+  },
+  "scripts": {
+    "build": "node scripts/build.js",
+    "dev": "vite",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "fantasticon": "^3.0.0",
+    "fs-extra": "^11.3.0",
+    "glob": "^11.0.0",
+    "potrace": "^2.1.8",
+    "svg-path-commander": "^2.1.0",
+    "svg-sprite": "^2.0.0",
+    "svgo": "^4.0.0",
+    "vite": "^6.0.0"
+  }
+}
