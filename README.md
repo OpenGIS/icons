@@ -67,7 +67,7 @@ Replace `@0.1.0` with the version you want, or use `@latest` to always get the n
 ```html
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/@ogis/icons@0.1.0/dist/ogis-icons.css"
+  href="https://cdn.jsdelivr.net/npm/@ogis/icons/dist/ogis-icons.css"
 />
 
 <i class="oi-search"></i>
@@ -79,7 +79,7 @@ Replace `@0.1.0` with the version you want, or use `@latest` to always get the n
 ```html
 <svg width="16" height="16">
   <use
-    href="https://cdn.jsdelivr.net/npm/@ogis/icons@0.1.0/dist/ogis-icons.svg#search"
+    href="https://cdn.jsdelivr.net/npm/@ogis/icons/dist/ogis-icons.svg#search"
   ></use>
 </svg>
 ```
