@@ -1,9 +1,9 @@
 {
   "name": "@ogis/icons",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "description": "Open GIS icon set — SVG sprite, icon font and CSS classes",
-  "homepage": "https://opengis.github.io/icons/",
+  "homepage": "https://ogis.org/icons/icons/",
   "license": "MIT",
   "repository": {
     "type": "git",

@@ -2,35 +2,28 @@
 
 Open GIS icon set — 49 SVG icons available as an **SVG sprite**, **icon font** (woff2/woff), and **CSS/SCSS** classes.
 
-Live preview: <https://opengis.github.io/icons/>
+Live preview: <https://ogis.org/icons/icons/>
 
 ---
 
-## Installation
+## With a build step (npm)
+
+### Install
 
 ```bash
 npm install @ogis/icons
 ```
 
----
-
-## Usage
-
-### CSS (icon font)
+### CSS icon font
 
 Import the stylesheet and use `<i>` tags with `oi-{name}` classes:
 
-```html
-<link rel="stylesheet" href="node_modules/@ogis/icons/dist/ogis-icons.css" />
-
-<i class="oi-search"></i>
-<i class="oi-gear"></i>
+```css
+@import "@ogis/icons/css";
 ```
 
-Or, when bundling with a CSS preprocessor:
-
-```css
-@import '@ogis/icons/css';
+```html
+<i class="oi-search"></i> <i class="oi-gear"></i>
 ```
 
 ### SCSS
@@ -38,26 +31,60 @@ Or, when bundling with a CSS preprocessor:
 Import the full SCSS file (includes `@font-face` and all icon classes):
 
 ```scss
-@use '@ogis/icons/scss';
+@use "@ogis/icons/scss";
 ```
 
 If you only need the `$ogis-icons-map` Sass variable (no generated classes):
 
 ```scss
-@use '@ogis/icons/scss-variables' as *;
+@use "@ogis/icons/scss-variables" as *;
 
 .my-icon::before {
-    content: map-get($ogis-icons-map, 'search');
+  content: map-get($ogis-icons-map, "search");
 }
 ```
 
 ### SVG sprite
 
-The sprite is at `dist/ogis-icons.svg`. Reference individual icons via fragment identifier:
+Copy or serve `node_modules/@ogis/icons/dist/ogis-icons.svg` and reference icons by ID:
 
 ```html
-<svg><use href="dist/ogis-icons.svg#search"></use></svg>
+<svg width="16" height="16">
+  <use href="/assets/ogis-icons.svg#search"></use>
+</svg>
 ```
+
+---
+
+## Without a build step (CDN)
+
+All assets are available via [jsDelivr](https://www.jsdelivr.com/) — no install required.
+
+Replace `@0.1.0` with the version you want, or use `@latest` to always get the newest release.
+
+### CSS icon font
+
+```html
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/@ogis/icons@0.1.0/dist/ogis-icons.css"
+/>
+
+<i class="oi-search"></i>
+<i class="oi-gear"></i>
+```
+
+### SVG sprite
+
+```html
+<svg width="16" height="16">
+  <use
+    href="https://cdn.jsdelivr.net/npm/@ogis/icons@0.1.0/dist/ogis-icons.svg#search"
+  ></use>
+</svg>
+```
+
+> **Note:** Browsers block cross-origin `<use href="…">` references to external SVG files. Either self-host the sprite or inline it at the top of your HTML before using fragment references.
 
 ---
 
@@ -96,15 +123,15 @@ npm run dev
 
 ## Outputs
 
-| File | Description |
-|---|---|
-| `dist/ogis-icons.svg` | SVG symbol sprite |
-| `dist/ogis-icons.woff2` | Icon font (woff2) |
-| `dist/ogis-icons.woff` | Icon font (woff) |
-| `dist/ogis-icons.css` | CSS with `@font-face` + `.oi-*` classes |
-| `dist/ogis-icons.scss` | SCSS with `@font-face` + `.oi-*` classes |
-| `dist/ogis-icons-variables.scss` | SCSS variables only (no classes) |
-| `dist/ogis-icons.json` | Codepoint map as JSON |
+| File                             | Description                              |
+| -------------------------------- | ---------------------------------------- |
+| `dist/ogis-icons.svg`            | SVG symbol sprite                        |
+| `dist/ogis-icons.woff2`          | Icon font (woff2)                        |
+| `dist/ogis-icons.woff`           | Icon font (woff)                         |
+| `dist/ogis-icons.css`            | CSS with `@font-face` + `.oi-*` classes  |
+| `dist/ogis-icons.scss`           | SCSS with `@font-face` + `.oi-*` classes |
+| `dist/ogis-icons-variables.scss` | SCSS variables only (no classes)         |
+| `dist/ogis-icons.json`           | Codepoint map as JSON                    |
 
 ---
 
