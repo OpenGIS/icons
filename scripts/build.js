@@ -195,20 +195,131 @@ async function updateCodepoints() {
     return codepoints;
 }
 
-async function buildFont(codepoints) {
-    console.log('Building icon font...');
-    await generateFonts({
-        inputDir: PATHS.svg,
-        outputDir: PATHS.dist,
-        name: 'ogis-icons',
-        fontTypes: [FontAssetType.WOFF2, FontAssetType.WOFF],
-        assetTypes: [OtherAssetType.CSS, OtherAssetType.SCSS, OtherAssetType.JSON],
-        prefix: 'oi',
-        codepoints,
-        normalize: true,
-        fontHeight: 300,
+// ---------------------------------------------------------------------------
+// Fix fill-rule="evenodd" paths for font rendering (non-zero winding rule).
+//
+// SVG sprites honour fill-rule="evenodd" natively, but icon fonts only support
+// the non-zero winding rule. Holes must be encoded as sub-paths winding in the
+// opposite direction to their parent. This function rewrites every compound path
+// so that outer contours wind CW and hole contours wind CCW, then strips the
+// fill-rule attribute.
+// ---------------------------------------------------------------------------
+
+function _getSignedArea(pathString) {
+    const cmd = new SVGPathCommander(pathString);
+    const totalLen = cmd.getTotalLength();
+    if (totalLen === 0) return 0;
+    const N = 120;
+    let area = 0;
+    let prev = cmd.getPointAtLength(0);
+    for (let i = 1; i <= N; i++) {
+        const cur = cmd.getPointAtLength(totalLen * i / N);
+        area += (prev.x * cur.y - cur.x * prev.y);
+        prev = cur;
+    }
+    return area / 2;
+}
+
+function _samplePath(pathString, N = 80) {
+    const cmd = new SVGPathCommander(pathString);
+    const len = cmd.getTotalLength();
+    return Array.from({ length: N }, (_, i) => cmd.getPointAtLength(len * i / N));
+}
+
+function _pointInPolygon(px, py, polygon) {
+    let inside = false;
+    for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+        const { x: xi, y: yi } = polygon[i];
+        const { x: xj, y: yj } = polygon[j];
+        if (((yi > py) !== (yj > py)) && px < (xj - xi) * (py - yi) / (yj - yi) + xi) {
+            inside = !inside;
+        }
+    }
+    return inside;
+}
+
+function _fixEvenOddPath(d) {
+    // Convert to absolute coordinates first so relative `m` sub-path origins
+    // don't lose context when each sub-path is processed independently.
+    const absD = new SVGPathCommander(d).toAbsolute().toString();
+    const subpaths = absD.split(/(?=[M])/).map(s => s.trim()).filter(Boolean);
+    if (subpaths.length <= 1) return d;
+
+    const infos = subpaths.map(sp => {
+        const cmd = new SVGPathCommander(sp);
+        const len = cmd.getTotalLength();
+        return {
+            path: sp,
+            area: _getSignedArea(sp),
+            polygon: _samplePath(sp, 80),
+            midPt: cmd.getPointAtLength(len * 0.5),
+        };
     });
-    console.log('  Font files written to dist/');
+
+    // Determine nesting level for each sub-path via point-in-polygon containment.
+    // Even level (0, 2, …) → outer / island → wind CW  (positive area in SVG y-down)
+    // Odd  level (1, 3, …) → hole           → wind CCW (negative area)
+    const levels = infos.map((info, i) =>
+        infos.reduce((count, other, j) => {
+            if (j === i) return count;
+            return count + (_pointInPolygon(info.midPt.x, info.midPt.y, other.polygon) ? 1 : 0);
+        }, 0)
+    );
+
+    return infos.map((info, i) => {
+        const shouldBeHole = levels[i] % 2 === 1;
+        const needsReverse = shouldBeHole ? info.area > 0 : info.area < 0;
+        return needsReverse ? new SVGPathCommander(info.path).reverse().toString() : info.path;
+    }).join(' ');
+}
+
+async function prepareForFont(inputDir, tempDir) {
+    console.log('Preparing SVGs for font (fixing evenodd winding)...');
+    await fs.ensureDir(tempDir);
+    const files = await glob(`${inputDir}/*.svg`);
+    let fixed = 0;
+
+    for (const file of files) {
+        let content = await fs.readFile(file, 'utf8');
+        const hasEvenOdd = content.includes('fill-rule="evenodd"');
+
+        if (hasEvenOdd) {
+            content = content.replace(/d="([^"]+)"/g, (match, d) => {
+                const subs = d.split(/(?=[Mm])/).filter(Boolean);
+                if (subs.length <= 1) return match;
+                return `d="${_fixEvenOddPath(d)}"`;
+            });
+            // Remove fill-rule — winding direction now encodes the hole information
+            content = content.replace(/\s*fill-rule="evenodd"/g, '');
+            fixed++;
+        }
+
+        await fs.writeFile(path.join(tempDir, path.basename(file)), content);
+    }
+
+    console.log(`  Fixed ${fixed} evenodd SVG(s); copied ${files.length} total to ${tempDir}`);
+}
+
+async function buildFont(codepoints) {
+    const tempDir = path.join(PATHS.dist, '.font-src');
+    try {
+        await prepareForFont(PATHS.svg, tempDir);
+        console.log('Building icon font...');
+        await generateFonts({
+            inputDir: tempDir,
+            outputDir: PATHS.dist,
+            name: 'ogis-icons',
+            fontTypes: [FontAssetType.WOFF2, FontAssetType.WOFF],
+            assetTypes: [OtherAssetType.CSS, OtherAssetType.SCSS, OtherAssetType.JSON],
+            prefix: 'oi',
+            codepoints,
+            normalize: true,
+            fontHeight: 300,
+        });
+        console.log('  Font files written to dist/');
+    } finally {
+        await fs.remove(tempDir);
+    }
 }
 
 async function buildVariablesScss(codepoints) {
