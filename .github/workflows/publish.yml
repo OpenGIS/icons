@@ -1,3 +1,5 @@
+# https://docs.npmjs.com/trusted-publishers
+
 name: Publish to npm
 
 on:
@@ -10,36 +12,21 @@ permissions:
   id-token: write  # required for npm Trusted Publisher (OIDC)
 
 jobs:
-  check-version:
-    runs-on: ubuntu-latest
-    outputs:
-      is_new: ${{ steps.check.outputs.is_new }}
-      version: ${{ steps.check.outputs.version }}
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Check if version is already published
-        id: check
-        run: |
-          VERSION=$(node -p "require('./package.json').version")
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          PACKAGE=$(node -p "require('./package.json').name")
-          PUBLISHED=$(npm view "$PACKAGE@$VERSION" version 2>/dev/null || echo "")
-          if [ "$PUBLISHED" = "$VERSION" ]; then
-            echo "is_new=false" >> $GITHUB_OUTPUT
-            echo "Version $VERSION is already on npm — skipping."
-          else
-            echo "is_new=true" >> $GITHUB_OUTPUT
-            echo "New version $VERSION — will publish."
-          fi
-
   publish:
-    needs: check-version
-    if: needs.check-version.outputs.is_new == 'true'
     runs-on: ubuntu-latest
-    environment: npm
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Check if version changed
+        id: version
+        run: |
+          if git diff HEAD~1 HEAD -- package.json | grep -q '"version"'; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
 
       - uses: actions/setup-node@v4
         with:
@@ -49,7 +36,5 @@ jobs:
       - run: npm ci
       - run: npm run build
 
-      - name: Publish
-        run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - run: npm publish --provenance --access public
+        if: steps.version.outputs.changed == 'true'
