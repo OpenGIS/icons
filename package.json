@@ -18,7 +18,8 @@
   "exports": {
     "./dist/*": "./dist/*",
     "./css": "./dist/ogis-icons.css",
-    "./scss": "./dist/ogis-icons.scss"
+    "./scss": "./dist/ogis-icons.scss",
+    "./scss-variables": "./dist/ogis-icons-variables.scss"
   },
   "scripts": {
     "build": "node scripts/build.js",

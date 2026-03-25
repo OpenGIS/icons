@@ -211,6 +211,21 @@ async function buildFont(codepoints) {
     console.log('  Font files written to dist/');
 }
 
+async function buildVariablesScss(codepoints) {
+    const entries = Object.entries(codepoints)
+        .map(([name, cp]) => `    "${name}": "\\${cp.toString(16)}"`)
+        .join(',\n');
+
+    const content = `// Variables-only file — no @font-face or CSS classes.
+// Import this when you only need $ogis-icons-map (e.g. for SCSS map-get usage).
+// @use '@ogis/icons/dist/ogis-icons-variables' as *;
+$ogis-icons-map: (\n${entries}\n) !default;\n`;
+
+    const outputPath = path.join(PATHS.dist, 'ogis-icons-variables.scss');
+    await fs.writeFile(outputPath, content);
+    console.log(`  Wrote ${outputPath}`);
+}
+
 async function run() {
     await fs.ensureDir(PATHS.dist);
     await processPngs();
@@ -218,6 +233,7 @@ async function run() {
     await buildSprite();
     const codepoints = await updateCodepoints();
     await buildFont(codepoints);
+    await buildVariablesScss(codepoints);
     console.log('\nBuild complete ✓');
 }
 
