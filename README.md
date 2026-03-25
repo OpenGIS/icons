@@ -1,8 +1,8 @@
 # @ogis/icons
 
-Open GIS icon set — 49 SVG icons available as an **SVG sprite**, **icon font** (woff2/woff), and **CSS/SCSS** classes.
+Open GIS icon set — available as an **SVG sprite**, **icon font** (woff2/woff), and **CSS/SCSS** classes.
 
-Live preview: <https://ogis.org/icons/icons/>
+Live preview: <https://ogis.org/icons/>
 
 ---
 
