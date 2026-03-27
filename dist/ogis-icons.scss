@@ -2,8 +2,8 @@ $ogis-icons-font: "ogis-icons";
 
 @font-face {
     font-family: $ogis-icons-font;
-    src: url("./ogis-icons.woff2?1eb5a13d6edc205179ab068b8675ed5b") format("woff2"),
-url("./ogis-icons.woff?1eb5a13d6edc205179ab068b8675ed5b") format("woff");
+    src: url("./ogis-icons.woff2?46a652490120129663e027d4c5509180") format("woff2"),
+url("./ogis-icons.woff?46a652490120129663e027d4c5509180") format("woff");
 }
 
 i[class^="oi-"]:before, i[class*=" oi-"]:before {
@@ -67,6 +67,7 @@ $ogis-icons-map: (
     "arrow-left-right": "\f12f",
     "arrow-down-right": "\f130",
     "arrow-clockwise": "\f131",
+    "ogis-logo": "\f132",
 );
 
 .oi-x:before {
@@ -215,4 +216,7 @@ $ogis-icons-map: (
 }
 .oi-arrow-clockwise:before {
     content: map-get($ogis-icons-map, "arrow-clockwise");
+}
+.oi-ogis-logo:before {
+    content: map-get($ogis-icons-map, "ogis-logo");
 }

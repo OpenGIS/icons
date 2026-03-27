@@ -1,7 +1,7 @@
 @font-face {
     font-family: "ogis-icons";
-    src: url("./ogis-icons.woff2?1eb5a13d6edc205179ab068b8675ed5b") format("woff2"),
-url("./ogis-icons.woff?1eb5a13d6edc205179ab068b8675ed5b") format("woff");
+    src: url("./ogis-icons.woff2?46a652490120129663e027d4c5509180") format("woff2"),
+url("./ogis-icons.woff?46a652490120129663e027d4c5509180") format("woff");
 }
 
 i[class^="oi-"]:before, i[class*=" oi-"]:before {
@@ -161,4 +161,7 @@ i[class^="oi-"]:before, i[class*=" oi-"]:before {
 }
 .oi-arrow-clockwise:before {
     content: "\f131";
+}
+.oi-ogis-logo:before {
+    content: "\f132";
 }
