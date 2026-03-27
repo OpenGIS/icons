@@ -88,6 +88,37 @@ Replace `@0.1.0` with the version you want, or use `@latest` to always get the n
 
 ---
 
+## Sizing & color
+
+### Icon font
+
+Set size with `font-size` and color with `color`:
+
+```html
+<i class="oi-search" style="font-size: 1.5rem; color: steelblue;"></i>
+```
+
+Or in CSS:
+
+```css
+.oi-search {
+  font-size: 1.5rem;
+  color: steelblue;
+}
+```
+
+### SVG sprite
+
+Set size with `width` / `height` attributes (or equivalent CSS). Set icon color with the `fill` attribute:
+
+```html
+<svg width="24" height="24" fill="steelblue">
+  <use href="/assets/ogis-icons.svg#search"></use>
+</svg>
+```
+
+---
+
 ## Development
 
 ### Build
