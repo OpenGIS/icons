@@ -18,7 +18,7 @@ on:
 
 permissions:
   contents: read
-  id-token: write  # required for npm Trusted Publisher (OIDC)
+  id-token: write # required for npm Trusted Publisher (OIDC)
 
 jobs:
   publish:
@@ -39,12 +39,11 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '24'
-          registry-url: 'https://registry.npmjs.org'
+          node-version: "24"
+          registry-url: "https://registry.npmjs.org"
 
       - run: npm ci
       - run: npm run build
 
       - run: npm publish --provenance
         if: steps.version.outputs.changed == 'true'
-
