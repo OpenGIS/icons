@@ -1,3 +1,7 @@
+---
+last_commit: "943a2a54d98ae07542919b05107b1c45ff47681e"
+---
+
 # @ogis/icons
 
 Open GIS icon set — available as an **SVG sprite**, **icon font** (woff2/woff), and **CSS/SCSS** classes.
@@ -84,7 +88,8 @@ Replace `@0.1.0` with the version you want, or use `@latest` to always get the n
 </svg>
 ```
 
-> **Note:** Browsers block cross-origin `<use href="…">` references to external SVG files. Either self-host the sprite or inline it at the top of your HTML before using fragment references.
+> [!NOTE]
+> Browsers block cross-origin `<use href="…">` references to external SVG files. Either self-host the sprite or inline it at the top of your HTML before using fragment references.
 
 ---
 
@@ -147,8 +152,24 @@ npm run dev
 
 ### Adding icons
 
-- Place new `.svg` files in `src/svg/` (or `.png` files in `src/png/` for auto-tracing), then run `npm run build`.
-- Codepoint assignments are persisted in `src/codepoints.json` so existing icons keep stable Unicode values.
+Import icons from dependency sources (recommended):
+
+```bash
+npm run import bootstrap-icons <icon-name>
+```
+
+This copies the icon from the npm package into `src/svg/` and refuses to overwrite existing icons unless `--force` is passed. Sources are registered in the `SOURCES` registry in [`scripts/import-icons.js`](scripts/import-icons.js) — other icon packages can be added there.
+
+Alternatively, place new `.svg` files in `src/svg/` (or `.png` files in `src/png/` for auto-tracing), then run `npm run build`.
+
+Codepoint assignments are persisted in `src/codepoints.json` so existing icons keep stable Unicode values.
+
+### Icon sources
+
+- **Bootstrap Icons** — primary source, imported from the `bootstrap-icons` npm package (MIT licensed, see [twbs/icons](https://github.com/twbs/icons)).
+- **Custom icons** — `ogis-logo`, `position`, `position-heading`, `position-lock`, `route`, `sidebar-info` are auto-traced from the PNGs in `src/png/`.
+
+The build pipeline is unchanged — `src/svg/` remains the single source of truth for all icons.
 
 ---
 
@@ -169,3 +190,10 @@ npm run dev
 ## License
 
 MIT
+
+Bootstrap Icons are MIT licensed ([twbs/icons](https://github.com/twbs/icons)) and are included via the `bootstrap-icons` npm package.
+
+## Further Reading
+
+- [Build pipeline & icon import](docs/1.build.md)
+- [Full docs index](docs/README.md)
