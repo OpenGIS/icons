@@ -1,13 +1,11 @@
 > [!TIP]
 > Project archived, eaten by **[Waymark JS](https://github.com/OpenGIS/Waymark-JS)**.
 
+---
+
 # @ogis/icons
 
 Open GIS icon set — available as an **SVG sprite**, **icon font** (woff2/woff), and **CSS/SCSS** classes.
-
-Live preview: <https://ogis.org/icons/>
-
----
 
 ## With a build step (npm)
 
