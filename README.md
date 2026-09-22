@@ -1,6 +1,5 @@
----
-last_commit: "943a2a54d98ae07542919b05107b1c45ff47681e"
----
+> [!TIP]
+> Project archived, eaten by **[Waymark JS](https://github.com/OpenGIS/Waymark-JS)**.
 
 # @ogis/icons
 
