@@ -1,5 +1,5 @@
 > [!TIP]
-> Project archived, eaten by **[Waymark JS](https://github.com/OpenGIS/Waymark-JS)**.
+> This project has a [new home](https://github.com/OpenGIS/app).
 
 ---
 
